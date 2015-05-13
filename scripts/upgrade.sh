@@ -15,10 +15,11 @@
 #
 # (c) 2015, Nolan Brubaker <nolan.brubaker@rackspace.com>
 set -e -u -x
+set -o pipefail
 
 export RPC_CONFIG_FILE=${RPC_CONFIG_FILE:-"/etc/rpc_deploy/rpc_user_config.yml"}
 
-if [[ -f $RPC_CONFIG_FILE ]]; then
+if [[ -f "$RPC_CONFIG_FILE" ]]; then
     # Append the repo-infra_hosts stanza to the existing configuration file
     ./make_repo_stanza.py $RPC_CONFIG_FILE >> $RPC_CONFIG_FILE
 fi

@@ -28,7 +28,7 @@ except ImportError:
 import sys
 
 if len(sys.argv) < 2:
-    print("Usage: make_repo_stanxa.py /path/to/rpc_user_config.yml")
+    print("Usage: make_repo_stanza.py /path/to/rpc_user_config.yml")
     exit(1)
 
 with open(sys.argv[1], 'r') as f:
@@ -37,6 +37,13 @@ with open(sys.argv[1], 'r') as f:
         print("'infra_hosts' stanza not found! Make sure you're using an RPC "
               "9.x or 10.x rpc_user_config.yml file.")
         exit(1)
+
+    # Given how this script is used, we don't want to make a stanza
+    # and keep appending it to the file; if one already exists,
+    # we should avoid doing anything.
+    if 'repo-infra_hosts' in data.keys():
+        exit(2)
+
     # Make a new dictionary so that we get the section name in
     # the dump; if we merely make a new key in the 'data' dict
     # and print data['repo-infra_hosts'], we don't get 'repo-infra_hosts'

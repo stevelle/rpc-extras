@@ -21,6 +21,7 @@ OSAD_DIR='/opt/rpc-extras/os-ansible-deployment'
 RPCD_DIR='/opt/rpc-extras/rpcd'
 
 export RPC_CONFIG_FILE=${RPC_CONFIG_FILE:-"/etc/rpc_deploy/rpc_user_config.yml"}
+export OSAD_CONFIG_FILE=${OSAD_CONFIG_FULE:-"/etc/openstack_deploy/openstack_user_config.yml"}
 
 if [[ -f "${RPC_CONFIG_FILE}" ]]; then
     # Append the repo-infra_hosts stanza to the existing configuration file
@@ -33,8 +34,17 @@ if [[ ! -d /etc/openstack_deploy ]]; then
     mkdir /etc/openstack_deploy
 fi
 
+# Put an 11.x config file in place for the 11.x dynamic inventory to find.
+if [[ ! -f "${OSAD_CONFIG_FILE}" ]]; then
+    cp "${RPC_CONFIG_FILE}" "${OSAD_CONFIG_FILE}"
+fi
+
 # generate a new inventory so the load balancers know about the repo containers.
-"${OSAD_DIR}"/playbooks/inventory/dynamic_inventory.py  >> /etc/openstack_deploy/openstack_inventory.json
+"${OSAD_DIR}"/playbooks/inventory/dynamic_inventory.py  > /etc/openstack_deploy/openstack_inventory.json
+
+# The osad config directories will be handled with the run-upgrade.sh script;
+# clean up our version so it can run un-impeded.
+rm "${OSAD_CONFIG_FILE}"
 
 # Do the actual upgrade
 /opt/rpc-extras/os-ansible-deployment/scripts/run-upgrade.sh

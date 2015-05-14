@@ -29,7 +29,11 @@ import sys
 
 if len(sys.argv) < 2:
     print("Usage: make_repo_stanza.py /path/to/rpc_user_config.yml")
-    exit(1)
+    print("Exit codes:\n")
+    print("\t 1 - no infra_hosts stanza found.")
+    print("\t 2 - repo-infra_hosts stanza already exists")
+    print("\t 3 - no file provided")
+    exit(3)
 
 with open(sys.argv[1], 'r') as f:
     data = load(f.read(), Loader=Loader)

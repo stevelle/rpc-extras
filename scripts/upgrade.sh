@@ -17,16 +17,28 @@
 set -e -u -x
 set -o pipefail
 
+OSAD_DIR='/opt/rpc-extras/os-ansible-deployment'
+RPCD_DIR='/opt/rpc-extras/rpcd'
+
 export RPC_CONFIG_FILE=${RPC_CONFIG_FILE:-"/etc/rpc_deploy/rpc_user_config.yml"}
 
-if [[ -f "$RPC_CONFIG_FILE" ]]; then
+if [[ -f "${RPC_CONFIG_FILE}" ]]; then
     # Append the repo-infra_hosts stanza to the existing configuration file
-    ./make_repo_stanza.py $RPC_CONFIG_FILE >> $RPC_CONFIG_FILE
+    ./make_repo_stanza.py "${RPC_CONFIG_FILE}" >> "${RPC_CONFIG_FILE}"
 fi
 
 # generate a new inventory so the load balancers know about the repo containers.
-/opt/rpc-extras/os-ansible-deployment/playbooks/inventory/dynamic_inventory.py
+"${OSAD_DIR}"/playbooks/inventory/dynamic_inventory.py
 
 
 # Do the actual upgrade
 /opt/rpc-extras/os-ansible-deployment/scripts/do_upgrade.sh
+
+# install RPC
+source /opt/rpc-extras/os-ansible-deployment/scripts/scripts-library.sh
+cd "${RPCD_DIR}"/playbooks/
+
+# TODO(nolan) need to remove the stuff in the maas directory. Maybe make a
+# play for upgrade-maas?
+
+install_bits horizon_extensions.yml rpc-support.yml setup-maas.yml

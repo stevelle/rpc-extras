@@ -30,6 +30,7 @@ if [[ -f "${RPC_CONFIG_FILE}" && ! -z $(grep -Rq openstack_repo_url "${RPC_CONFI
 fi
 
 # Do the actual upgrade
+cd /opt/rpc-extras/os-ansible-deployment
 /opt/rpc-extras/os-ansible-deployment/scripts/run-upgrade.sh
 
 # install RPC-specific stuff

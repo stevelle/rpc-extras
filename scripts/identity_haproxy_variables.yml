@@ -1,0 +1,53 @@
+
+haproxy_service_configs:
+  - service:
+      haproxy_service_name: galera
+      haproxy_backend_nodes: "{{ [groups['galera_all'][0]] }}"  # list expected
+      haproxy_backup_nodes: "{{ groups['galera_all'][1:] }}"
+      haproxy_port: 3306
+      haproxy_balance_type: tcp
+      haproxy_timeout_client: 5000s
+      haproxy_timeout_server: 5000s
+      haproxy_backend_options:
+        - "mysql-check user {{ galera_monitoring_user }}"
+  - service:
+      haproxy_service_name: keystone_admin
+      haproxy_backend_nodes: "{{ groups['keystone_all'] }}"
+      haproxy_port: 35357
+      haproxy_balance_type: http
+      haproxy_backend_options:
+       - "forwardfor"
+       - "httpchk"
+       - "httplog"
+  - service:
+      haproxy_service_name: keystone_service
+      haproxy_backend_nodes: "{{ groups['keystone_all'] }}"
+      haproxy_port: 5000
+      haproxy_balance_type: http
+      haproxy_backend_options:
+       - "forwardfor"
+       - "httpchk"
+       - "httplog"
+  - service:
+      haproxy_service_name: horizon
+      haproxy_backend_nodes: "{{ groups['horizon_all'] }}"
+      haproxy_port: 80
+      haproxy_balance_type: http
+      haproxy_backend_options:
+       - "forwardfor"
+       - "httpchk"
+       - "httplog"
+  - service:
+      haproxy_service_name: horizon_ssl
+      haproxy_backend_nodes: "{{ groups['horizon_all'] }}"
+      haproxy_port: 443
+      haproxy_balance_type: tcp
+      haproxy_balance_alg: source
+      haproxy_backend_options:
+       - "ssl-hello-chk"
+  - service:
+      haproxy_service_name: repo_all
+      haproxy_backend_nodes: "{{ groups['pkg_repo'] }}"
+      haproxy_port: 8181
+      haproxy_backend_port: 8181
+      haproxy_balance_type: http

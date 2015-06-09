@@ -1,0 +1,152 @@
+---
+# Copyright 2014, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+component_skel:
+  galera:
+    belongs_to:
+      - galera_all
+  horizon:
+    belongs_to:
+      - horizon_all
+  keystone:
+    belongs_to:
+      - keystone_all
+  memcached:
+    belongs_to:
+      - memcached_all
+  pkg_repo:
+    belongs_to:
+      - repo_all
+  rabbitmq:
+    belongs_to:
+      - rabbitmq_all
+  rsyslog:
+    belongs_to:
+      - rsyslog_all
+  utility:
+    belongs_to:
+      - utility_all
+
+
+container_skel:
+  galera_container:
+    belongs_to:
+      - infra_containers
+      - shared-infra_containers
+    contains:
+      - galera
+    properties:
+      service_name: galera
+      container_release: trusty
+  horizon_container:
+    belongs_to:
+      - infra_containers
+      - os-infra_containers
+    contains:
+      - horizon
+    properties:
+      service_name: horizon
+      container_release: trusty
+  keystone_container:
+    belongs_to:
+      - infra_containers
+      - identity_containers
+    contains:
+      - keystone
+    properties:
+      service_name: keystone
+      container_release: trusty
+  memcached_container:
+    belongs_to:
+      - infra_containers
+      - shared-infra_containers
+    contains:
+      - memcached
+    properties:
+      service_name: memcached
+      container_release: trusty
+  rabbit_mq_container:
+    belongs_to:
+      - infra_containers
+      - shared-infra_containers
+    contains:
+      - rabbitmq
+    properties:
+      service_name: rabbitmq
+      container_release: trusty
+  repo_container:
+    belongs_to:
+      - repo-infra_containers
+    contains:
+      - pkg_repo
+    properties:
+      service_name: repo
+      container_release: trusty
+  rsyslog_container:
+    belongs_to:
+      - log_containers
+    contains:
+      - rsyslog
+    properties:
+      service_name: rsyslog
+      container_release: trusty
+  utility_container:
+    belongs_to:
+      - infra_containers
+      - shared-infra_containers
+    contains:
+      - utility
+    properties:
+      service_name: utility
+      container_release: trusty
+
+
+physical_skel:
+  infra_containers:
+    belongs_to:
+      - all_containers
+  infra_hosts:
+    belongs_to:
+      - hosts
+  identity_containers:
+    belongs_to:
+      - all_containers
+  identity_hosts:
+    belongs_to:
+      - hosts
+  log_containers:
+    belongs_to:
+      - all_containers
+  log_hosts:
+    belongs_to:
+      - hosts
+  os-infra_containers:
+    belongs_to:
+      - all_containers
+  os-infra_hosts:
+    belongs_to:
+      - hosts
+  repo-infra_hosts:
+    belongs_to:
+      - hosts
+  repo-infra_containers:
+    belongs_to:
+      - all_containers
+  shared-infra_containers:
+    belongs_to:
+      - all_containers
+  shared-infra_hosts:
+    belongs_to:
+      - hosts

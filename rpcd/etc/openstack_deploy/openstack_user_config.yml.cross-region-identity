@@ -1,18 +1,13 @@
 ---
 cidr_networks:
   container: 172.29.236.0/22
-  tunnel: 172.29.240.0/22
-  storage: 172.29.244.0/22
 
 used_ips:
-  - "172.29.236.1,172.29.236.50"
-  - "172.29.240.1,172.29.240.50"
-  - "172.29.244.1,172.29.244.50"
-  - "172.29.248.1,172.29.248.50"
+  - "172.29.236.1,172.29.236.2,172.29.236.3"
 
 global_overrides:
-  internal_lb_vip_address: 172.29.236.100
-  external_lb_vip_address: 192.168.1.1
+  internal_lb_vip_address: 172.29.236.1
+  external_lb_vip_address: __EXTERNAL_LB_VIP__
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
@@ -27,84 +22,72 @@ global_overrides:
           - hosts
         is_container_address: true
         is_ssh_address: true
-    - network:
-        container_bridge: "br-vxlan"
-        container_type: "veth"
-        container_interface: "eth10"
-        ip_from_q: "tunnel"
-        type: "vxlan"
-        range: "1:1000"
-        net_name: "vxlan"
-        group_binds:
-          - neutron_linuxbridge_agent
-    - network:
-        container_bridge: "br-vlan"
-        container_type: "veth"
-        container_interface: "eth12"
-        host_bind_override: "eth12"
-        type: "flat"
-        net_name: "flat"
-        group_binds:
-          - neutron_linuxbridge_agent
-    - network:
-        container_bridge: "br-vlan"
-        container_type: "veth"
-        container_interface: "eth11"
-        type: "vlan"
-        range: "1:1"
-        net_name: "vlan"
-        group_binds:
-          - neutron_linuxbridge_agent
-    - network:
-        container_bridge: "br-storage"
-        container_type: "veth"
-        container_interface: "eth2"
-        ip_from_q: "storage"
-        type: "raw"
-        group_binds:
-          - glance_api
-          - cinder_api
-          - cinder_volume
-          - nova_compute
-          - swift_proxy
 
 shared-infra_hosts:
-  aio1:
-    # Galera set to multiples to test clustering.
+  # would like to test affinity 3, so leaving the verbose affinity in for now
+  ident1:
     affinity:
-      galera_container: 3
-    ip: 172.29.236.100
+      galera_container: 1
+    ip: 172.29.236.1
+  ident2:
+    affinity:
+      galera_container: 1
+    ip: 172.29.236.2
+  ident3:
+    affinity:
+      galera_container: 1
+    ip: 172.29.236.3
 
 os-infra_hosts:
-  aio1:
+  ident1:
     # Horizon is set to 0 for now.
     affinity:
       horizon_container: 0
-    ip: 172.29.236.100
+    ip: 172.29.236.1
+  ident2:
+    # Horizon is set to 0 for now.
+    affinity:
+      horizon_container: 0
+    ip: 172.29.236.2
+  ident3:
+    # Horizon is set to 0 for now.
+    affinity:
+      horizon_container: 0
+    ip: 172.29.236.3
 
 repo-infra_hosts:
-  aio1:
-    # Repo is set to multiple to test clustering. This test only requires x2.
-    affinity:
-      repo_container: 2
-    ip: 172.29.236.100
+  ident1:
+    ip: 172.29.236.1
+  ident2:
+    ip: 172.29.236.2
+  ident3:
+    ip: 172.29.236.3
 
 identity_hosts:
-  aio1:
-    # Keystone is set to multiple to test clustering. This test only requires x2.
+  # Keystone is set to multiple to test clustering. This test only requires x2.
+  ident1:
     affinity:
       keystone_container: 2
-    ip: 172.29.236.100
-
+    ip: 172.29.236.1
+    container_vars:
+        keystone_service_region: Region1
+  ident2:
+    affinity:
+      keystone_container: 2
+    ip: 172.29.236.2
+    container_vars:
+        keystone_service_region: Region2
+  ident3:
+    affinity:
+      keystone_container: 2
+    ip: 172.29.236.3
+    container_vars:
+        keystone_service_region: Region3
 log_hosts:
-  aio1:
-    ip: 172.29.236.100
-
-network_hosts:
-  aio1:
-    ip: 172.29.236.100
+  ident1:
+    ip: 172.29.236.1
 
 haproxy_hosts:
-  aio1:
-    ip: 172.29.236.100
+  ident1:
+    ip: 172.29.236.1
 

@@ -2,8 +2,8 @@
 haproxy_service_configs:
   - service:
       haproxy_service_name: galera
-      haproxy_backend_nodes: "{{ [groups['galera_all'][0]] }}"  # list expected
-      haproxy_backup_nodes: "{{ groups['galera_all'][1:] }}"
+      haproxy_backend_nodes: "{{ [groups['galera_all']| selecthostvars(hostvars, 'keystone_service_region', keystone_service_region[0]] }}"  # list expected
+      haproxy_backup_nodes: "{{ groups['galera_all']| selecthostvars(hostvars, 'keystone_service_region', keystone_service_region[1:] }}"
       haproxy_port: 3306
       haproxy_balance_type: tcp
       haproxy_timeout_client: 5000s

@@ -12,7 +12,7 @@ haproxy_service_configs:
         - "mysql-check user {{ galera_monitoring_user }}"
   - service:
       haproxy_service_name: keystone_admin
-      haproxy_backend_nodes: "{{ groups['keystone_all'] }}"
+      haproxy_backend_nodes: "{{ groups['keystone_all'] | selecthostvars(hostvars, 'keystone_service_region', keystone_service_region }}"
       haproxy_port: 35357
       haproxy_balance_type: http
       haproxy_backend_options:
@@ -21,7 +21,7 @@ haproxy_service_configs:
        - "httplog"
   - service:
       haproxy_service_name: keystone_service
-      haproxy_backend_nodes: "{{ groups['keystone_all'] }}"
+      haproxy_backend_nodes: "{{ groups['keystone_all'] | selecthostvars(hostvars, 'keystone_service_region', keystone_service_region }}"
       haproxy_port: 5000
       haproxy_balance_type: http
       haproxy_backend_options:

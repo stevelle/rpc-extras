@@ -173,15 +173,22 @@ fi
 sed -i "s/keystone_auth_admin_password:.*/keystone_auth_admin_password: ${ADMIN_PASSWORD}/" ${ETC_DIR}/user_secrets.yml
 sed -i "s/external_lb_vip_address:.*/external_lb_vip_address: ${PUBLIC_ADDRESS}/" ${ETC_DIR}/openstack_user_config.yml
 
+# Remove keystone_service_region from user_extra_variables so that it can be overridden on a container-basis in user_config
+sed -i '/keystone_service_region/d' ${ETC_DIR}/user_group_vars.yml
+
 # adjust the container layout to only build what's necessary
 rm -f ${ETC_DIR}/env.d/*
-cp ${OSAD_DIR}/etc/openstack_deploy/env.d/{keystone,galera,infra,memcache,pkg_repo,rabbitmq,shared-infra}.yml /etc/openstack_deploy/env.d/
+cp ${OSAD_DIR}/etc/openstack_deploy/env.d/{keystone,galera,infra,memcache,pkg_repo,rabbitmq,shared-infra}.yml ${ETC_DIR}/env.d/
+
+# Override keustone service adminuri var
+echo "keystone_service_adminuri: \"{{ keystone_service_proto }}://{{ external_lb_vip_address }}:{{ keystone_admin_port }}\"" | tee -a ${ETC_DIR}/user_variables.yml
+echo "keystone_service_adminuri_v3: \"{{ keystone_service_proto }}://{{ external_lb_vip_address }}:{{ keystone_admin_port }}\""| tee -a ${ETC_DIR}/user_variables.yml
 
 # Prepare RPC for deployment ------------------------------------------------
 # Apply RPC configuration files
 cp -R ${RPCD_DIR}/etc/openstack_deploy/* ${ETC_DIR}/
 # apply the templates for cross-region identity cloud
-mv ${ETC_DIR}/openstack_user_config.yml.cross-region-identity ${ETC_DIR}/openstack_user_config.yml
+mv ${ETC_DIR}/openstack_user_config.yml.ident-cloud ${ETC_DIR}/openstack_user_config.yml
 # apply customizations to user_config.yml
 sed -i "s/__EXTERNAL_LB_VIP__/${PUBLIC_ADDRESS}/" ${ETC_DIR}/openstack_user_config.yml
 # apply customizations to user_variables.yml
@@ -206,5 +213,5 @@ fi
 
 # setup the haproxy load balancer
 if [[ "${DEPLOY_HAPROXY}" == "yes" ]]; then
-  cat ${RPCD_DIR}/scripts/identity_haproxy_variables.yml >> ${ETC_DIR}/user_variables.yml
+  mv ${ETC_DIR}/conf.d/haproxy_variables.yml.ident-cloud >> ${ETC_DIR}/conf.d/haproxy_variables.yml
 fi

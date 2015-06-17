@@ -39,6 +39,7 @@ shared-infra_hosts:
     ip: 172.29.236.3
 
 os-infra_hosts:
+  # set container_vars for keystone_service_region on each if affinity > 0
   ident1:
     # Horizon is set to 0 for now.
     affinity:
@@ -90,4 +91,7 @@ log_hosts:
 haproxy_hosts:
   ident1:
     ip: 172.29.236.1
-
+  ident2:
+    ip: 172.29.236.2
+  ident3:
+    ip: 172.29.236.3

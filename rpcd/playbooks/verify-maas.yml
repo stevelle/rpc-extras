@@ -73,4 +73,4 @@
       tags:
         - maas-verify
   vars_files:
-    - "{{ rpc_repo_path }}/playbooks/roles/rpc_maas/defaults/main.yml"
+    - "roles/rpc_maas/defaults/main.yml"

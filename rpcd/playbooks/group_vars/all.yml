@@ -15,6 +15,9 @@
 # This is the location where the rpc repository was checked out
 rpc_repo_path: /opt/rpc-openstack/openstack-ansible
 
+# Location to store a catalog of migrations completed
+migrations_dir: /etc/openstack_deploy/migrations
+
 # RPC Extras version
 rpc_release: master
 
